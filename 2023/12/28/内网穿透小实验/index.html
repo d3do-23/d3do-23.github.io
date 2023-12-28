@@ -19,15 +19,15 @@
 
 
 
-    <meta name="description" content="使用 frp（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。frp 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。 实验概述： frp服务器：部署在可以公网访问的机器上（本地机器或跳板机）。 frp客户端：部署在需要访问的内网机器上（Docker容器中）。 Docker容器：模拟其他内网环境（三台）。  步骤1：下载和配置">
+    <meta name="description" content="内网穿透小实验使用 frp（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。frp 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。 实验概述： frp服务器：部署在可以公网访问的机器上（本地机器或跳板机）。 frp客户端：部署在需要访问的内网机器上（Docker容器中）。 Docker容器：模拟其他内网环境（三台）。  步骤">
 <meta property="og:type" content="article">
 <meta property="og:title" content="内网穿透小实验">
 <meta property="og:url" content="https://d3do-23.github.io/2023/12/28/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B0%8F%E5%AE%9E%E9%AA%8C/index.html">
 <meta property="og:site_name" content="d3do&#39;s blog">
-<meta property="og:description" content="使用 frp（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。frp 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。 实验概述： frp服务器：部署在可以公网访问的机器上（本地机器或跳板机）。 frp客户端：部署在需要访问的内网机器上（Docker容器中）。 Docker容器：模拟其他内网环境（三台）。  步骤1：下载和配置">
+<meta property="og:description" content="内网穿透小实验使用 frp（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。frp 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。 实验概述： frp服务器：部署在可以公网访问的机器上（本地机器或跳板机）。 frp客户端：部署在需要访问的内网机器上（Docker容器中）。 Docker容器：模拟其他内网环境（三台）。  步骤">
 <meta property="og:locale">
 <meta property="article:published_time" content="2023-12-28T10:19:39.000Z">
-<meta property="article:modified_time" content="2023-12-28T10:24:35.377Z">
+<meta property="article:modified_time" content="2023-12-28T10:28:11.690Z">
 <meta property="article:author" content="d3do">
 <meta property="article:tag" content="web">
 <meta name="twitter:card" content="summary_large_image">
@@ -130,11 +130,15 @@
             
             
             <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
-                <a class="navbar-item" title="Table des Matières">
-                    Table des Matières
+                <a class="navbar-item" title="Table of Contents">
+                    Table of Contents
                 </a>
                 <div class="navbar-dropdown">
                     
+                    
+                    
+                    
+                    <a class="navbar-item" href="#内网穿透小实验">1&nbsp;&nbsp;<b>内网穿透小实验</b></a>
                     
                     
                     
@@ -287,7 +291,7 @@
     
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <p>使用 <code>frp</code>（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。<code>frp</code> 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。</p>
+        <h1 id="内网穿透小实验"><a href="#内网穿透小实验" class="headerlink" title="内网穿透小实验"></a>内网穿透小实验</h1><p>使用 <code>frp</code>（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。<code>frp</code> 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。</p>
 <h3 id="实验概述："><a href="#实验概述：" class="headerlink" title="实验概述："></a>实验概述：</h3><ol>
 <li><strong>frp服务器</strong>：部署在可以公网访问的机器上（本地机器或跳板机）。</li>
 <li><strong>frp客户端</strong>：部署在需要访问的内网机器上（Docker容器中）。</li>
@@ -485,24 +489,13 @@ remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span>
     </div>
     
     
-    <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
-            
-        </span>
-        <span class="column is-12-mobile is-half-desktop  article-nav-next">
-            
-            <a href="/2023/08/06/hello-world/">Hello World</a>
-            
-        </span>
-    </div>
-    
 </article>
 
 
 
 
 <div class="comments">
-    <h3 class="title is-4">Commentaires</h3>
+    <h3 class="title is-4">Comments</h3>
     <script src="https://utteranc.es/client.js"
         repo="aszx87410/huli-blog"
         issue-term="title"

@@ -184,7 +184,7 @@
     
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <p>使用 <code>frp</code>（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。<code>frp</code> 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。</p>
+        <h1 id="内网穿透小实验"><a href="#内网穿透小实验" class="headerlink" title="内网穿透小实验"></a>内网穿透小实验</h1><p>使用 <code>frp</code>（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。<code>frp</code> 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。</p>
 <h3 id="实验概述："><a href="#实验概述：" class="headerlink" title="实验概述："></a>实验概述：</h3><ol>
 <li><strong>frp服务器</strong>：部署在可以公网访问的机器上（本地机器或跳板机）。</li>
 <li><strong>frp客户端</strong>：部署在需要访问的内网机器上（Docker容器中）。</li>
@@ -371,49 +371,6 @@ remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span>
 <li><strong>端口转发</strong>：<code>frp</code> 允许将内网服务的端口映射到 <code>frp</code> 服务器上的端口。这意味着，可以将内网的HTTP服务映射到一个特定的端口，并通过这个端口使用HTTP代理访问服务。</li>
 </ol>
 <p>综上所述，如果使用 <code>frp</code> 进行内网穿透，需要首先查看 <code>frpc.ini</code> 的配置，确定已经设置了哪种类型的代理（TCP、HTTP等），然后在 <code>Proxifier</code> 中选择相应的代理类型进行配置。例如，如果在 <code>frpc.ini</code> 中设置了一个HTTP代理来暴露内网的Web服务，那么应该在 <code>Proxifier</code> 中选择HTTP代理类型。</p>
-
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/2023/08/06/hello-world/" itemprop="url">Hello World</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            <time datetime="2023-08-06T09:03:32.216Z" itemprop="datePublished">2023年8月6日</time>
-        </span>
-        
-        
-        
-        <spen data-nosnippet class="column is-narrow">(Translated by ChatGPT)</span>
-        
-    </div>
-    
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
     
     </div>
