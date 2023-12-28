@@ -268,11 +268,239 @@
 </nav>
 
     <section class="section">
-    <div class="container">
-      <div data-nosnippet class="self-notice">
-        牢记初心 不忘始终
-      </div>
+  <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            内网穿透小实验
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2023-12-28T10:19:39.000Z" itemprop="datePublished">2023年12月28日</time>
+        </span>
+        
+        
+        
+        <spen data-nosnippet class="column is-narrow">(Translated by ChatGPT)</span>
+        
     </div>
+    
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <h1 id="内网穿透小实验"><a href="#内网穿透小实验" class="headerlink" title="内网穿透小实验"></a>内网穿透小实验</h1><p>使用 <code>frp</code>（Fast Reverse Proxy）来搭建内网穿透是一个更加现实和实用的方案。<code>frp</code> 是一个高性能的反向代理应用，可以帮助轻松实现内网穿透，允许在内网部署的服务通过公网访问。</p>
+<h3 id="实验概述："><a href="#实验概述：" class="headerlink" title="实验概述："></a>实验概述：</h3><ol>
+<li><strong>frp服务器</strong>：部署在可以公网访问的机器上（本地机器或跳板机）。</li>
+<li><strong>frp客户端</strong>：部署在需要访问的内网机器上（Docker容器中）。</li>
+<li><strong>Docker容器</strong>：模拟其他内网环境（三台）。</li>
+</ol>
+<h3 id="步骤1：下载和配置frp"><a href="#步骤1：下载和配置frp" class="headerlink" title="步骤1：下载和配置frp"></a>步骤1：下载和配置frp</h3><ol>
+<li><p><strong>下载frp</strong>：从 <a target="_blank" rel="noopener" href="https://github.com/fatedier/frp">frp GitHub页面</a> 下载适合操作系统的frp版本。</p>
+</li>
+<li><p><strong>配置frp服务器</strong>（<code>frps.ini</code>）：</p>
+<pre class="line-numbers language-none"><code class="language-none">bind_port &#x3D; 7000<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>这是frp服务器的基本配置，监听端口7000。</p>
+</li>
+<li><p><strong>配置frp客户端</strong>（<code>frpc.ini</code>）：</p>
+<pre class="line-numbers language-none"><code class="language-none">server_addr &#x3D; [frp服务器的IP地址]
+server_port &#x3D; 7000
+
+[ssh]
+type &#x3D; tcp
+local_ip &#x3D; 127.0.0.1
+local_port &#x3D; 22
+remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这个配置将本地的SSH端口（22）映射到远程服务器的6000端口。可以根据需要修改这个配置。</p>
+</li>
+</ol>
+<h3 id="步骤2：在Docker中运行frp客户端"><a href="#步骤2：在Docker中运行frp客户端" class="headerlink" title="步骤2：在Docker中运行frp客户端"></a>步骤2：在Docker中运行frp客户端</h3><p>创建一个Dockerfile来运行frp客户端：</p>
+<pre class="line-numbers language-none"><code class="language-none"># Dockerfile for frp client
+FROM alpine:latest
+
+# 下载frp客户端
+ADD https:&#x2F;&#x2F;github.com&#x2F;fatedier&#x2F;frp&#x2F;releases&#x2F;download&#x2F;[版本]&#x2F;frp_[版本]_linux_amd64.tar.gz &#x2F;frp.tar.gz
+
+# 解压
+RUN tar -zxvf &#x2F;frp.tar.gz &amp;&amp; \
+    mv frp_[版本]_linux_amd64&#x2F;frpc &#x2F;usr&#x2F;bin&#x2F;frpc &amp;&amp; \
+    rm -rf frp_[版本]_linux_amd64 &amp;&amp; \
+    rm &#x2F;frp.tar.gz
+
+# 将frpc.ini文件复制到容器中
+COPY frpc.ini &#x2F;etc&#x2F;frpc.ini
+
+# 运行frp客户端
+CMD [&quot;frpc&quot;, &quot;-c&quot;, &quot;&#x2F;etc&#x2F;frpc.ini&quot;]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>构建并运行Docker容器：</p>
+<pre class="line-numbers language-none"><code class="language-none">docker build -t frp-client .
+docker run -d --network internal-network frp-client<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="步骤3：运行frp服务器"><a href="#步骤3：运行frp服务器" class="headerlink" title="步骤3：运行frp服务器"></a>步骤3：运行frp服务器</h3><p>在可以公网访问的机器上运行frp服务器：</p>
+<pre class="line-numbers language-none"><code class="language-none">.&#x2F;frps -c frps.ini<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="步骤4：访问内网服务"><a href="#步骤4：访问内网服务" class="headerlink" title="步骤4：访问内网服务"></a>步骤4：访问内网服务</h3><p>现在，可以通过访问frp服务器上的相应端口来访问内网服务。例如，如果将SSH端口映射到了6000，那么通过连接到frp服务器的6000端口即可访问内网Docker容器的SSH服务。</p>
+<h3 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h3><ul>
+<li>确保下载的frp版本与操作系统和架构相匹配。</li>
+<li>在配置文件中，替换 <code>[版本]</code> 为下载的frp版本号。</li>
+<li>确保了解安全风险，并在必要时进行适当的安全配置。</li>
+</ul>
+<p>通过使用 <code>frp</code>，可以更容易地在本地机器上模拟内网穿透的实验环境，同时也能在实际应用中实现内网服务的公网访问。</p>
+<h1 id="frp配置"><a href="#frp配置" class="headerlink" title="frp配置"></a>frp配置</h1><p><code>frpc</code>（Fast Reverse Proxy Client）是 <code>frp</code> 套件中的客户端组件，用于在内网环境中运行并连接到 <code>frp</code> 服务器 (<code>frps</code>)。<code>frpc</code> 的配置文件 (<code>frpc.ini</code>) 是用于定义如何将内网服务通过 <code>frp</code> 服务器暴露到外网的关键文件。以下是 <code>frpc.ini</code> 配置文件的详细介绍：</p>
+<h3 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h3><p><code>frpc.ini</code> 文件分为两个主要部分：全局配置和代理配置。</p>
+<ol>
+<li><strong>全局配置</strong>：这部分位于文件的顶部，定义了客户端连接到服务器的基本设置，如服务器地址、端口等。</li>
+<li><strong>代理配置</strong>：这部分定义了具体的代理服务，包括代理类型、本地服务地址、映射到外网的端口等。</li>
+</ol>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>全局配置定义了 <code>frpc</code> 如何连接到 <code>frps</code>。下面是全局配置的一些常见选项：</p>
+<ul>
+<li><code>server_addr</code>: <code>frps</code> 的地址，可以是 IP 地址或域名。</li>
+<li><code>server_port</code>: <code>frps</code> 监听的端口，默认为 7000。</li>
+<li><code>token</code>: 连接认证的令牌，如果 <code>frps</code> 设置了令牌认证，这里需要填写对应的令牌。</li>
+<li><code>log_file</code>: 日志文件的存储路径。</li>
+<li><code>log_level</code>: 日志级别，如 <code>info</code>, <code>warn</code>, <code>error</code>。</li>
+<li><code>log_max_days</code>: 日志文件保留的最大天数。</li>
+</ul>
+<h3 id="代理配置"><a href="#代理配置" class="headerlink" title="代理配置"></a>代理配置</h3><p>代理配置定义了内网服务如何通过 <code>frps</code> 暴露到外网。每个代理服务都有自己的配置段，可以有多个代理配置。以下是一些常见的代理类型及其配置：</p>
+<h4 id="TCP-代理"><a href="#TCP-代理" class="headerlink" title="TCP 代理"></a>TCP 代理</h4><p>用于普通 TCP 服务，如 SSH、HTTP 服务等。</p>
+<pre class="line-numbers language-none"><code class="language-none">[ssh]
+type &#x3D; tcp
+local_ip &#x3D; 127.0.0.1
+local_port &#x3D; 22
+remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li><code>type</code>: 设置为 <code>tcp</code>。</li>
+<li><code>local_ip</code>: 本地服务的 IP 地址，通常是 <code>127.0.0.1</code> 或者内网 IP。</li>
+<li><code>local_port</code>: 本地服务的端口。</li>
+<li><code>remote_port</code>: 在 <code>frps</code> 上映射的端口。</li>
+</ul>
+<h4 id="HTTP-HTTPS-代理"><a href="#HTTP-HTTPS-代理" class="headerlink" title="HTTP&#x2F;HTTPS 代理"></a>HTTP&#x2F;HTTPS 代理</h4><p>用于 HTTP&#x2F;HTTPS 服务。</p>
+<pre class="line-numbers language-none"><code class="language-none">[web]
+type &#x3D; http
+local_port &#x3D; 80
+custom_domains &#x3D; www.example.com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li><code>type</code>: 设置为 <code>http</code> 或 <code>https</code>。</li>
+<li><code>local_port</code>: 本地 HTTP&#x2F;HTTPS 服务的端口。</li>
+<li><code>custom_domains</code>: 自定义域名，客户端通过此域名访问服务。</li>
+</ul>
+<h4 id="UDP-代理"><a href="#UDP-代理" class="headerlink" title="UDP 代理"></a>UDP 代理</h4><p>用于 UDP 流量的代理。</p>
+<pre class="line-numbers language-none"><code class="language-none">[dns]
+type &#x3D; udp
+local_ip &#x3D; 127.0.0.1
+local_port &#x3D; 53
+remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li><code>type</code>: 设置为 <code>udp</code>。</li>
+<li><code>local_ip</code> 和 <code>local_port</code>: 同 TCP 代理。</li>
+<li><code>remote_port</code>: 在 <code>frps</code> 上映射的端口。</li>
+</ul>
+<h3 id="高级配置"><a href="#高级配置" class="headerlink" title="高级配置"></a>高级配置</h3><p><code>frpc</code> 还支持一些高级配置，如连接加密、压缩、健康检查等。这些配置项可以进一步提升连接的安全性和效率。</p>
+<h3 id="配置示例"><a href="#配置示例" class="headerlink" title="配置示例"></a>配置示例</h3><p>以下是一个包含多个代理服务的 <code>frpc.ini</code> 示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">server_addr &#x3D; x.x.x.x
+server_port &#x3D; 7000
+token &#x3D; your_token
+
+[ssh]
+type &#x3D; tcp
+local_ip &#x3D; 127.0.0.1
+local_port &#x3D; 22
+remote_port &#x3D; 6000
+
+[web]
+type &#x3D; http
+local_port &#x3D; 80
+custom_domains &#x3D; www.example.com
+
+[dns]
+type &#x3D; udp
+local_ip &#x3D; 127.0.0.1
+local_port &#x3D; 53
+remote_port &#x3D; 6000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这个配置文件设置了三个代理：SSH、HTTP 网站和 DNS 服务。</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>确保 <code>frpc</code> 的配置与 <code>frps</code> 端的配置相匹配。</li>
+<li>保护好配置文件，特别是包含令牌或其他敏感信息的部分。</li>
+<li>在生产环境中使用 <code>frp</code> 时，请确保遵循最佳的安全实践。</li>
+</ul>
+<p><code>frp</code> 是一个强大的内网穿透工具，正确配置后可以非常高效地暴露内网服务。通过上述信息，应该能够设置和运行 <code>frpc</code> 以实现内网穿透。</p>
+<h1 id="proxy代理穿透"><a href="#proxy代理穿透" class="headerlink" title="proxy代理穿透"></a>proxy代理穿透</h1><p>要在同一局域网中的其他用户通过 <code>Proxifier</code> 使用 <code>frp</code> 内网穿透的跳板机进行访问，需要按照以下步骤进行配置：</p>
+<h3 id="步骤1：配置frp内网穿透"><a href="#步骤1：配置frp内网穿透" class="headerlink" title="步骤1：配置frp内网穿透"></a>步骤1：配置frp内网穿透</h3><p>首先确保已正确设置并运行了 <code>frp</code> 内网穿透：</p>
+<ol>
+<li><strong>frp服务器（frps）</strong>：在跳板机（可以访问公网的机器）上运行。</li>
+<li><strong>frp客户端（frpc）</strong>：在需要穿透的内网机器上运行。</li>
+</ol>
+<h3 id="步骤2：在跳板机上设置代理服务器"><a href="#步骤2：在跳板机上设置代理服务器" class="headerlink" title="步骤2：在跳板机上设置代理服务器"></a>步骤2：在跳板机上设置代理服务器</h3><p>在跳板机上设置一个代理服务器，这样局域网内的其他用户就可以通过这个代理服务器访问内网环境。可以使用如 <code>Squid</code>、<code>Shadowsocks</code> 等软件来设置代理服务器。</p>
+<h3 id="步骤3：配置Proxifier"><a href="#步骤3：配置Proxifier" class="headerlink" title="步骤3：配置Proxifier"></a>步骤3：配置Proxifier</h3><p>其他局域网用户需要在他们的机器上安装 <code>Proxifier</code>。然后按照以下步骤配置 <code>Proxifier</code>：</p>
+<ol>
+<li><strong>打开Proxifier</strong>：安装并启动 <code>Proxifier</code>。</li>
+<li><strong>添加代理服务器</strong>：<ul>
+<li>在 <code>Proxifier</code> 中选择 “Proxies”。</li>
+<li>点击 “Add” 来添加一个新的代理。</li>
+<li>输入跳板机的 IP 地址和在步骤2中设置的代理服务器端口。</li>
+<li>选择代理服务器类型（取决于设置的代理类型，例如 <code>HTTP</code>、<code>SOCKS5</code> 等）。</li>
+<li>点击 “OK” 保存设置。</li>
+</ul>
+</li>
+<li><strong>配置规则</strong>：<ul>
+<li>在 “Rules” 中，可以配置特定的流量规则。例如，可以设置所有流量都通过代理服务器，或者只有特定的应用程序或目的地地址使用代理。</li>
+<li>添加新规则，设置要通过代理的目标地址或应用程序。</li>
+<li>确保规则是激活的。</li>
+</ul>
+</li>
+<li><strong>应用和保存配置</strong>：配置完规则后，确保保存并应用所有设置。</li>
+</ol>
+<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>确保跳板机的代理服务器正确配置，并且可以被局域网内的其他用户访问。</li>
+<li>需要在局域网内的每台需要访问内网服务的机器上配置 <code>Proxifier</code>。</li>
+<li>在设置 <code>Proxifier</code> 规则时，确保正确指定要穿透访问的内网地址或服务。</li>
+<li>考虑安全因素，确保代理服务器仅对授权的用户开放，以防止未授权访问。</li>
+</ul>
+<p>通过以上步骤，同一局域网中的用户就可以使用 <code>Proxifier</code> 通过跳板机访问内网环境了。</p>
+<p>如果正在使用 <code>frp</code>（Fast Reverse Proxy）进行内网穿透，并且想要使用 <code>Proxifier</code> 从而使得同一局域网的其他用户也能通过跳板机访问内网环境，代理服务器的类型选择将直接取决于在 <code>frp</code> 客户端（<code>frpc</code>）的配置。</p>
+<p>在 <code>frp</code> 中，可以配置不同类型的代理，包括 TCP、UDP、HTTP 和 HTTPS。具体的类型选择依赖于：</p>
+<ol>
+<li><strong>想暴露的服务类型</strong>：例如，如果想通过 <code>frp</code> 暴露一个内网的Web服务，可能会在 <code>frpc.ini</code> 中配置一个 HTTP 或 HTTPS 类型的代理。</li>
+<li><strong>frpc配置</strong>：在 <code>frpc.ini</code> 文件中，会根据需要访问的内网服务设置不同的代理类型。例如：<ul>
+<li>对于TCP服务（如SSH），会使用TCP代理。</li>
+<li>对于HTTP&#x2F;HTTPS服务，会使用HTTP或HTTPS代理。</li>
+</ul>
+</li>
+<li><strong>端口转发</strong>：<code>frp</code> 允许将内网服务的端口映射到 <code>frp</code> 服务器上的端口。这意味着，可以将内网的HTTP服务映射到一个特定的端口，并通过这个端口使用HTTP代理访问服务。</li>
+</ol>
+<p>综上所述，如果使用 <code>frp</code> 进行内网穿透，需要首先查看 <code>frpc.ini</code> 的配置，确定已经设置了哪种类型的代理（TCP、HTTP等），然后在 <code>Proxifier</code> 中选择相应的代理类型进行配置。例如，如果在 <code>frpc.ini</code> 中设置了一个HTTP代理来暴露内网的Web服务，那么应该在 <code>Proxifier</code> 中选择HTTP代理类型。</p>
+
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/web/">#web</a></span>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    <script src="https://utteranc.es/client.js"
+        repo="aszx87410/huli-blog"
+        issue-term="title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+</div>
+
 </section>
     <footer class="footer">
     <div class="container">
