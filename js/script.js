@@ -1,4 +1,11 @@
 (function ($) {
+    document.querySelector('.btn-dark-mode').addEventListener('click', function(e) {
+        e.preventDefault()
+        let setToDarkMode = !document.body.classList.contains('dark-mode')
+        localStorage.setItem('dark-mode', setToDarkMode ? 'true' : 'false')
+        document.body.classList.toggle('dark-mode')
+    })
+
     $('.navbar-burger').click(function () {
         $(this).toggleClass('is-active');
         $('.navbar-main .navbar-start').toggleClass('is-active');
@@ -69,14 +76,17 @@
     });
 
     $('.article-entry').find('h1, h2, h3, h4, h5, h6').on('click', function () {
-        if ($(this).get(0).id) {
-            window.location.hash = $(this).get(0).id;
+        let id;
+        const span = $($(this).get(0)).find('span');
+        if (span && span.attr('id')) {
+            window.location.hash = span.attr('id');;
         }
     });
 
+    /* NOTE: disable 自動處理時間轉換
     if (typeof(moment) === 'function') {
         $('.article-meta time').each(function () {
             $(this).text(moment($(this).attr('datetime')).fromNow());
         });
-    }
+    }*/
 })(jQuery);
